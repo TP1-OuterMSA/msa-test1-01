@@ -15,4 +15,20 @@ public class CustomerController {
         Customer savedCustomer = customerService.registerCustomer(customer);
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
     }
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return new ResponseEntity<>("test입니다.", HttpStatus.OK);
+    }
 }
+// http://localhost:8080/customers/register
+// http://localhost:8080/customers/test
+// 게시글
+// http://localhost:8080/blog/create
+// http://localhost:8080/blog/update
+// http://localhost:8080/blog/delete
+// http://localhost:8080/blog/retreive
+
+// 신고
+// http://localhost:8080/report/post-report/{id}
+// http://localhost:8080/report/delete
+// http://localhost:8080/report/retreive
