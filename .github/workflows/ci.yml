@@ -47,7 +47,7 @@ jobs:
 
       - name: Save short SHA
         id: short-sha
-        run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+        run: echo "SHORT_SHA=latest" >> $GITHUB_ENV
 
       - name: Checkout infrastructure repository
         uses: actions/checkout@v3
@@ -58,8 +58,10 @@ jobs:
 
       - name: Update image tag in Helm chart
         run: |
-          cd msa-infra/charts/services/msa-test1
-          sed -i "s/tag: \".*\"/tag: \"sha-${SHORT_SHA}\"/g" values.yaml
+        cd msa-infra
+        find charts -name "msa-test1" | xargs ls -la  # 실제 경로 확인
+        cd charts/services/msa-test1  # 또는 확인된 실제 경로
+        sed -i "s/tag: \".*\"/tag: \"latest\"/g" values.yaml
           
       - name: Commit and push changes to infrastructure repo
         run: |
