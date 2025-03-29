@@ -12,7 +12,7 @@ public class CustomerController {
     private CustomerService customerService;
     @PostMapping("/register")
     public ResponseEntity<Customer> registerCustomer(@RequestBody Customer customer) {
-        customer.setName(customer.getName() + " cicd 테스트");
+        customer.setName(customer.getName() + " cicd 테스트2");
         Customer savedCustomer = customerService.registerCustomer(customer);
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
     }
