@@ -84,5 +84,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git commit -m "Update msa-test1 image tag to latest"
-          git push
+          # 변경사항이 있을 때만 커밋 시도
+          git diff-index --quiet HEAD || git commit -m "Update msa-test1 image tag"
+          # 변경사항이 없어도 에러로 처리하지 않음
+          git push || echo "No changes to push"
