@@ -37,17 +37,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      # 중요: 여기서는 latest 태그만 사용
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           platforms: linux/amd64
-          tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest,${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:sha-${{ github.sha }}
-
-      - name: Save short SHA
-        id: short-sha
-        run: echo "SHORT_SHA=latest" >> $GITHUB_ENV
+          tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
 
       - name: Checkout infrastructure repository
         uses: actions/checkout@v3
@@ -56,10 +53,30 @@ jobs:
           path: msa-infra
           token: ${{ secrets.GH_PAT }}
 
+      # 디버깅을 위한 단계 추가
+      - name: Verify directory structure
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "msa-infra directory contents:"
+          ls -la msa-infra
+          echo "charts directory contents:"
+          ls -la msa-infra/charts
+          echo "services directory contents:"
+          ls -la msa-infra/charts/services
+          echo "msa-test1 directory contents:"
+          ls -la msa-infra/charts/services/msa-test1
+
       - name: Update image tag in Helm chart
         run: |
           cd msa-infra/charts/services/msa-test1
+          # values.yaml 파일 내용 확인
+          echo "Current values.yaml content:"
+          cat values.yaml
+          # 명시적으로 latest 태그로 설정
           sed -i "s/tag: \".*\"/tag: \"latest\"/g" values.yaml
+          # 변경 후 확인
+          echo "Updated values.yaml content:"
+          cat values.yaml
           
       - name: Commit and push changes to infrastructure repo
         run: |
@@ -67,5 +84,5 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git commit -m "Update msa-test1 image tag to sha-${SHORT_SHA}"
+          git commit -m "Update msa-test1 image tag to latest"
           git push
